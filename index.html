@@ -1,0 +1,220 @@
+<html>
+<head>
+  <title>Simple e-Stopwatch</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="copyright" content="Eleazar Gan" />
+  <meta name="description"
+        content="A simple stopwatch made simplified for daily usage of normal consumer." />
+  <meta name="keyword" content="simple, stopwatch, clock, count" />
+  <link rel="icon"
+      type="image/png"
+      href="favicon.png">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://use.fontawesome.com/caeddcce7e.js"></script>
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({
+      google_ad_client: "ca-pub-9526001370792323",
+      enable_page_level_ads: true
+    });
+  </script>
+  <style>
+    body {
+      background: #303030;
+      font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+      height:100%;
+    }
+    .wrapper {
+      width: 800px;
+      margin: 30px auto;
+      color: #fff;
+      text-align: center;
+    }
+    h1, h2, h3 {
+      font-family: 'Roboto', sans-serif;
+      font-weight: 100;
+      font-size: 2.6em;
+      text-transform: uppercase;
+    }
+    #mins, #seconds, #tens {
+      font-size: 7em;
+    }
+    #lap {
+      font-size: 1em;
+    }
+    #btn-reset {
+      width: 590px;
+    }
+    .small {
+      text-transform: lowercase;
+    }
+    button {
+      -moz-border-radius: 5px;
+      -webkit-border-radius: 5px;
+      border-radius: 5px;
+      -khtml-border-radius: 5px;
+      background: #303030;
+      color: #fff;
+      border: solid 1px #fff;
+      text-decoration:none;
+      cursor: pointer;
+      font-size: 1.2em;
+      padding: 18px 10px;
+      width: 180px;
+      margin: 10px;
+      outline: none;
+    }
+    button:hover {
+      -webkit-transition: all 0.5s ease-in-out;
+      -moz-transition: all 0.5s ease-in-out;
+      transition: all 0.5s ease-in-out;
+      background: #fff;
+      border: solid 1px #fff;
+      color: #303030;
+    }
+    i {
+      color: pink;
+    }
+    #white a {
+      color: #fff;
+      text-decoration: none;
+    }
+    #white a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrapper">
+    <h1>everyday <span class="small">e-</span><strong>Stopwatch</strong></h1>
+
+    <p><span id="mins">00</span>:<span id="seconds">00</span>:<span id="tens">00</span></p>
+    <p>
+      <span id="lap"></span>
+    </p>
+    <button id="btn-start">Start</button>
+    <button id="btn-lap">Lap</button>
+    <button id="btn-stop">Stop</button>
+    <button id="btn-reset">Reset</button>
+
+    <footer>
+      <p>
+        made with <i class="fa fa-heart" aria-hidden="true"></i> by 
+        <span id="white"><a href="https://getdev-test.firebaseapp.com/" target="__blank">Eleazar Gan</a></span>
+      </p>
+    </footer>
+  </div>
+
+
+  <script src="https://www.gstatic.com/firebasejs/4.3.0/firebase.js"></script>
+  <script>
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyBgO6RvcFT1Z6jwp_iekzf4PTNl4xHnjoE",
+      authDomain: "simple-e-stopwatch.firebaseapp.com",
+      databaseURL: "https://simple-e-stopwatch.firebaseio.com",
+      projectId: "simple-e-stopwatch",
+      storageBucket: "",
+      messagingSenderId: "821400290575"
+    };
+    firebase.initializeApp(config);
+  </script>
+  <script>
+  window.onload = function () {
+    var mins = 0;
+    var seconds = 0;
+    var tens = 0;
+    var appendmins = document.getElementById("mins");
+    var appendTens = document.getElementById("tens");
+    var appendSeconds = document.getElementById("seconds");
+    var appendLap = document.getElementById("lap");
+    var buttonStart = document.getElementById('btn-start');
+    var buttonStop = document.getElementById('btn-stop');
+    var buttonLap = document.getElementById('btn-lap');
+    var buttonReset = document.getElementById('btn-reset');
+    var Interval ;
+    var count = 0;
+
+    buttonStart.onclick = function() {
+      clearInterval(Interval);
+      Interval = setInterval(startTimer, 10);
+    }
+
+    buttonStop.onclick = function() {
+      clearInterval(Interval);
+    }
+
+    buttonLap.onclick = function() {
+      clearInterval(Interval);
+      console.log(mins);
+      count++;
+      if (mins == 0) {
+        mins = "00";
+      }
+      if (mins != "00" && mins < 10){
+        mins = "0" + mins;
+      }
+      if (seconds > 0 && seconds < 10){
+        seconds = "0" + seconds;
+      }
+      if (tens < 10){
+        tens = "0" + tens;
+      }
+      appendLap.innerHTML = appendLap.innerHTML + '<br><strong>' + count + "</strong> : " + mins + ":" + seconds + ":" + tens;
+      tens = "00";
+      seconds = "00";
+      mins = "00";
+      appendTens.innerHTML = tens;
+      appendSeconds.innerHTML = seconds;
+      appendmins.innerHTML = mins;
+      Interval = setInterval(startTimer, 10);
+    }
+
+    buttonReset.onclick = function() {
+      clearInterval(Interval);
+      tens = "00";
+    	seconds = "00";
+      mins = "00";
+      count = 0;
+      appendTens.innerHTML = tens;
+    	appendSeconds.innerHTML = seconds;
+      appendmins.innerHTML = mins;
+      appendLap.innerHTML = "";
+    }
+
+    function startTimer () {
+      tens++;
+
+      if(tens < 9){
+        appendTens.innerHTML = "0" + tens;
+      }
+
+      if (tens > 9){
+        appendTens.innerHTML = tens;
+
+      }
+
+      if (tens > 99) {
+        seconds++;
+        appendSeconds.innerHTML = "0" + seconds;
+        tens = 0;
+        appendTens.innerHTML = "0" + 0;
+      }
+
+      if (seconds > 9){
+        appendSeconds.innerHTML = seconds;
+      }
+
+      if (seconds > 59){
+        mins++;
+        appendmins.innerHTML = "0" + mins;
+        seconds = 0;
+        appendSeconds.innerHTML = "0" + 0;
+      }
+    }
+  }
+  </script>
+</body>
+</html>
